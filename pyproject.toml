@@ -1,0 +1,20 @@
+[project]
+name = "code-review-agent"
+version = "0.1.0"
+description = ""
+
+authors = [
+    { name = "towards-none", email = "human.at.sight@proton.me" }
+]
+
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "python-dotenv>=1.1.0,<2.0.0",
+    "pygithub (>=2.9.1,<3.0.0)",
+    "pydantic-ai>=1.88.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
