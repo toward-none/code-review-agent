@@ -28,9 +28,13 @@ class PRDetails(BaseModel):
     body: str | None = ""
 
 
-class IgnoredArgs(BaseModel):
+class ToolArgsBase(BaseModel):
     """Base for tool argument models; ignores extra args from the LLM."""
     model_config = ConfigDict(extra="ignore")
+
+class FetchPrDetailsArgs(ToolArgsBase):
+    """No-arg tool; accepts and ignores any extra fields from the model."""
+    pass
 
 
 class CommitFile(BaseModel):
@@ -136,13 +140,13 @@ def pr_commits_details(ctx: RunContext[ReviewDeps], head_sha: str) -> list[Commi
 
 
 @review_agent.tool
-def fetch_pr_details(ctx: RunContext[ReviewDeps], args: IgnoredArgs) -> PRDetails:
+def fetch_pr_details(ctx: RunContext[ReviewDeps], args: FetchPrDetailsArgs) -> PRDetails:
     """PR details tool — returns details about the pull request."""
     pull_request = ctx.deps.pull_request
     pull_request_details =  PRDetails(
         author=pull_request.user.login,
         title=pull_request.title,
-        body=pull_request.body,
+        body=pull_request.body or "",
         diff_url=pull_request.diff_url,
         state=pull_request.state,
         head_sha=pull_request.head.sha,
