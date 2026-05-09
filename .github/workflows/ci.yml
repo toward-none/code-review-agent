@@ -37,4 +37,4 @@ jobs:
           OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
           OPENAI_MODEL: "gpt-5.4"
           PYTHONUNBUFFERED: "1"
-        run: uv run python agent.py $GITHUB_TOKEN $REPOSITORY $PR_NUMBER $OPENAI_API_KEY $OPENAI_BASE_URL
+        run: uv run python -m code_review_agent.main
