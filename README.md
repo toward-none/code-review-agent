@@ -71,16 +71,20 @@ uv sync
 
 Create a .env file in the project root (same directory as pyproject.toml) with:
 
-You need also to add permissions for the repo in Github.
+**You need also to add proper read write permissions for the repo in Github.**
 
 # GitHub
 GITHUB_TOKEN=your_github_pat_here
+
 REPOSITORY=owner/repo-name        # e.g. toward-none/code-review-agent
+
 PR_NUMBER=1                       # the PR number to review
 
 # OpenAI / LLM
 OPENAI_MODEL=gpt-5.4              # or another model name
+
 OPENAI_API_KEY=your_openai_api_key_here
+
 OPENAI_BASE_URL=https://api.openai.com/v1
 
 **Running locally**
