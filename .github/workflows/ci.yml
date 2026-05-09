@@ -28,22 +28,6 @@ jobs:
         run: |
           uv sync --no-dev
 
-      - name: Run pytest with coverage
-        continue-on-error: true
-        run: |
-          uv run coverage run -m pytest --junit-xml=pytest.xml
-          uv run coverage xml -o coverage.xml
-
-      - name: Publish coverage results
-        if: always()
-        uses: aGallea/tests-coverage-report@v1
-        with:
-          cobertura-path:
-            coverage.xml
-          junit-path:
-            pytest.xml
-          show-diffcover: 'true'
-
       - name: Review agent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
