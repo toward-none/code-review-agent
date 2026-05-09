@@ -8,7 +8,7 @@ from typing import Any
 import dotenv
 
 from github import Auth, Github, PullRequest, PullRequestReview, Repository as GithubRepository
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -26,6 +26,11 @@ class PRDetails(BaseModel):
     head_sha: str
     commit_SHAs: list[str]
     body: str | None = ""
+
+
+class IgnoredArgs(BaseModel):
+    """Base for tool argument models; ignores extra args from the LLM."""
+    model_config = ConfigDict(extra="ignore")
 
 
 class CommitFile(BaseModel):
@@ -131,7 +136,7 @@ def pr_commits_details(ctx: RunContext[ReviewDeps], head_sha: str) -> list[Commi
 
 
 @review_agent.tool
-def fetch_pr_details(ctx: RunContext[ReviewDeps]) -> PRDetails:
+def fetch_pr_details(ctx: RunContext[ReviewDeps], args: IgnoredArgs) -> PRDetails:
     """PR details tool — returns details about the pull request."""
     pull_request = ctx.deps.pull_request
     pull_request_details =  PRDetails(
