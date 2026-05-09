@@ -15,7 +15,6 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 
 dotenv.load_dotenv()
-print(os.environ.items())
 
 
 class PRDetails(BaseModel):
@@ -31,10 +30,6 @@ class PRDetails(BaseModel):
 class ToolArgsBase(BaseModel):
     """Base for tool argument models; ignores extra args from the LLM."""
     model_config = ConfigDict(extra="ignore")
-
-class FetchPrDetailsArgs(ToolArgsBase):
-    """No-arg tool; accepts and ignores any extra fields from the model."""
-    pass
 
 
 class CommitFile(BaseModel):
@@ -70,7 +65,7 @@ class ReviewDeps:
     def __init__(self, pull_request_number: int, repository: Repository) -> None:
         self.pull_request_number = pull_request_number
         self.repository = repository
-        self.state =  defaultdict(dict)
+        self.state = defaultdict(dict)
 
     @cached_property
     def remote_repository(self) -> GithubRepository:
@@ -140,12 +135,17 @@ def pr_commits_details(ctx: RunContext[ReviewDeps], head_sha: str) -> list[Commi
 
 
 @review_agent.tool
-def fetch_pr_details(ctx: RunContext[ReviewDeps], args: FetchPrDetailsArgs) -> PRDetails:
-    """PR details tool — returns details about the pull request."""
+def fetch_pr_details(ctx: RunContext[ReviewDeps], _: str | None = None) -> PRDetails:
+    """
+    PR details tool — returns details about the pull request.
+
+    The second argument is a dummy string to accept and ignore any args the model sends
+    (including a bare string ""). This prevents validation errors in CI.
+    """
     pull_request = ctx.deps.pull_request
-    pull_request_details =  PRDetails(
+    pull_request_details = PRDetails(
         author=pull_request.user.login,
-        title=pull_request.title,
+        title=pull_request.title or "",
         body=pull_request.body or "",
         diff_url=pull_request.diff_url,
         state=pull_request.state,
@@ -243,7 +243,7 @@ async def run_review_workflow() -> None:
         review_deps = ReviewDeps(
             repository=Repository(
                 client=github_client,
-                full_repo_name=os.getenv("REPOSITORY") or "",  # could use Pydantic settings
+                full_repo_name=os.getenv("REPOSITORY") or "",
             ),
             pull_request_number=pr_number,
         )
