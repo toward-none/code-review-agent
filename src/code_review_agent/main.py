@@ -21,11 +21,11 @@ print(os.environ.items())
 class PRDetails(BaseModel):
     author: str
     title: str
-    body: str
     diff_url: str
     state: str
     head_sha: str
     commit_SHAs: list[str]
+    body: str | None = ""
 
 
 class CommitFile(BaseModel):
