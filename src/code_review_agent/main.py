@@ -183,7 +183,8 @@ def post_review(ctx: RunContext[ReviewDeps], comment: str) -> None:
 
 
 CONTEXT_AGENT_PROMPT = """
-You are the context gathering helper. You must execute ALL of the following steps:
+You are the context gathering helper. You must execute ALL of the following steps Do not add any extra arguments
+ to the tools functions.
 
 1. Call `fetch_pr_details` to get PR metadata.
 2. Call `pr_commits_details` using the head_sha from step 1.
