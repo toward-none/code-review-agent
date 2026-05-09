@@ -15,6 +15,7 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 
 dotenv.load_dotenv()
+print(os.environ.items())
 
 
 class PRDetails(BaseModel):
