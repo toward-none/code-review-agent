@@ -7,7 +7,13 @@ from typing import Any
 
 import dotenv
 
-from github import Auth, Github, PullRequest, PullRequestReview, Repository as GithubRepository
+from github import (
+    Auth,
+    Github,
+    PullRequest,
+    PullRequestReview,
+    Repository as GithubRepository,
+)
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIChatModel
@@ -38,7 +44,11 @@ class CommitFile(BaseModel):
 
 
 def create_github_client() -> Github:
-    return Github(auth=Auth.Token(os.getenv("GITHUB_TOKEN", ""))) if os.getenv("GITHUB_TOKEN") else Github()
+    return (
+        Github(auth=Auth.Token(os.getenv("GITHUB_TOKEN", "")))
+        if os.getenv("GITHUB_TOKEN")
+        else Github()
+    )
 
 
 class Repository:
@@ -66,7 +76,9 @@ class ReviewDeps:
     def get_commit_by_sha(self, sha: str) -> Any:
         return self.remote_repository.get_commit(sha)
 
-    def create_inline_comment(self, comment, commit_sha: str, path: str, line: int) -> PullRequestReview:
+    def create_inline_comment(
+        self, comment, commit_sha: str, path: str, line: int
+    ) -> PullRequestReview:
         return self.pull_request.create_review_comment(
             body=comment,
             commit=self.get_commit_by_sha(sha=commit_sha),
@@ -79,7 +91,9 @@ class ReviewDeps:
 
     def get_file_contents(self, file_name: str) -> str:
         print(file_name)
-        file_content = self.remote_repository.get_contents(file_name).decoded_content.decode("utf-8")
+        file_content = self.remote_repository.get_contents(
+            file_name
+        ).decoded_content.decode("utf-8")
         self.state["read_files_contents"][file_name] = file_content
         return file_content
 
@@ -197,7 +211,8 @@ async def run_review_workflow() -> None:
         )
 
         async with review_agent.run_stream(
-            f"Write code review for PR {pr_number}. {CONTEXT_AGENT_PROMPT}", deps=review_deps
+            f"Write code review for PR {pr_number}. {CONTEXT_AGENT_PROMPT}",
+            deps=review_deps,
         ) as response:
             async for text in response.stream_text():
                 print(text)
